@@ -9,7 +9,7 @@ CryptoTracker is an iOS application built with **SwiftUI** that uses [CoinGecko 
 - View detailed coin information (price, market cap, volume, rank, etc.)
 - Add coins to a personal portfolio
 - Portfolio data saved locally using Core Data
-- Built entirely with programmatic SwiftUI
+- Built entirely with SwiftUI
 - Clean and responsive user interface
 
 ## Technologies
@@ -22,6 +22,6 @@ CryptoTracker is an iOS application built with **SwiftUI** that uses [CoinGecko 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/amilmammadov/CryptoTracker
+   git clone https://github.com/amilmammadov/CryptoTracker.git
    cd CryptoTracker
 
