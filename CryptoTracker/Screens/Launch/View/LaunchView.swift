@@ -7,14 +7,11 @@
 
 import SwiftUI
 
-struct LaunchView: View {
+struct LaunchView<LaunchViewModel: LaunchViewModelProtocol>: View {
     
-    @State private var launchText: [String] = StringConstants.launchScreenText.map { String($0) }
+    @ObservedObject var launchViewModel: LaunchViewModel
     @State private var showLaunchText: Bool = false
-    @State private var counter: Int = 0
-    @State private var loops: Int = 0
     @Binding var showLuanchScreen: Bool
-    private let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack {
@@ -27,12 +24,12 @@ struct LaunchView: View {
             ZStack {
                 if showLaunchText {
                     HStack(spacing: 0) {
-                        ForEach(launchText.indices, id: \.self){ index in
-                            Text(launchText[index])
+                        ForEach(launchViewModel.launchText.indices, id: \.self){ index in
+                            Text(launchViewModel.launchText[index])
                                 .font(.headline)
                                 .fontWeight(.heavy)
                                 .foregroundStyle(ColorConstants.launchScreenAccentColor)
-                                .offset(y: counter == index ? -5 : 0)
+                                .offset(y: launchViewModel.counter == index ? -5 : 0)
                         }
                     }
                     .transition(.scale.animation(.easeIn))
@@ -43,16 +40,11 @@ struct LaunchView: View {
         .onAppear {
             showLaunchText.toggle()
         }
-        .onReceive(timer) { _ in
+        .onReceive(launchViewModel.timer) { _ in
             withAnimation {
-                if counter == launchText.count - 1 {
-                    counter = 0
-                    loops += 1
-                    if loops >= 2 {
-                        showLuanchScreen = false
-                    }
-                } else {
-                    counter += 1
+                launchViewModel.handleCounterChange()
+                launchViewModel.onFinish = {
+                    showLuanchScreen = false
                 }
             }
         }
@@ -60,5 +52,5 @@ struct LaunchView: View {
 }
 
 #Preview {
-    LaunchView(showLuanchScreen: .constant(true))
+    LaunchView(launchViewModel: LaunchViewModel(), showLuanchScreen: .constant(true))
 }

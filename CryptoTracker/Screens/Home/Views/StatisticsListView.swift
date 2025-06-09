@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct StatisticsListView: View {
+struct StatisticsListView<HomeViewModel: HomeViewModelProtocol>: View {
     
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @ObservedObject var homeViewModel: HomeViewModel
     @Binding var showPortfolio: Bool
     
     var body: some View {
@@ -24,6 +24,5 @@ struct StatisticsListView: View {
 }
 
 #Preview {
-    StatisticsListView(showPortfolio: .constant(false))
-        .environmentObject(HomeViewModel())
+    StatisticsListView(homeViewModel: HomeViewModel(), showPortfolio: .constant(false))
 }

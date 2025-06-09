@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct PortfolioView: View {
+struct PortfolioView<PortfolioViewModel: PortfolioViewModelProtocol>: View {
     
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @ObservedObject var portfolioViewModel: PortfolioViewModel
     @State private var selectedCoin: CoinModel?
     @State private var quantityText: String = ""
     @State private var showCheckMark: Bool = false
@@ -18,7 +18,7 @@ struct PortfolioView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    SearchBarView(searchText: $homeViewModel.searchText)
+                    SearchBarView(searchText: $portfolioViewModel.searchText)
                     coinLogoList
                     if selectedCoin != nil {
                         portfolioInputSection
@@ -35,6 +35,9 @@ struct PortfolioView: View {
                     trailingNavigationBarButtons
                 }
             }
+            .onAppear {
+                portfolioViewModel.setSubscribers()
+            }
         }
     }
 }
@@ -43,7 +46,7 @@ extension PortfolioView {
     private var coinLogoList: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack {
-                ForEach(homeViewModel.searchText.isEmpty ? homeViewModel.portfolioCoins : homeViewModel.filteredCoins) { coin in
+                ForEach(portfolioViewModel.searchText.isEmpty ? portfolioViewModel.portfolioCoins : portfolioViewModel.filteredCoins) { coin in
                     CoinLogoView(coin: coin)
                         .frame(width: 76)
                         .padding(4)
@@ -65,7 +68,7 @@ extension PortfolioView {
     
     private func updateSelectedCoin(coin: CoinModel){
         selectedCoin = coin
-        if let portfolioCoin = homeViewModel.portfolioCoins.first(where: { $0.id == coin.id }),
+        if let portfolioCoin = portfolioViewModel.portfolioCoins.first(where: { $0.id == coin.id }),
            let amount = portfolioCoin.currentHoldings {
             quantityText = "\(amount)"
         } else {
@@ -125,7 +128,7 @@ extension PortfolioView {
     private func saveButtonPressed(){
         guard let coin = selectedCoin,
               let amount = Double(quantityText) else { return }
-        homeViewModel.updatePortfolio(coin: coin, amount: amount)
+        portfolioViewModel.updatePortfolio(coin: coin, amount: amount)
         
         withAnimation(.easeIn) {
             showCheckMark = true
@@ -143,11 +146,10 @@ extension PortfolioView {
     
     private func removeSelection(){
         selectedCoin = nil
-        homeViewModel.searchText = ""
+        portfolioViewModel.searchText = ""
     }
 }
  
 #Preview {
-    PortfolioView()
-        .environmentObject(HomeViewModel())
+    PortfolioView(portfolioViewModel: PortfolioViewModel())
 }

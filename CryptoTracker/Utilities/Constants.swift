@@ -60,6 +60,7 @@ struct StringConstants {
     static let showLess = "Show Less"
     static let website = "Website"
     static let reddit = "Reddit"
+    static let emptyPortfolioText = "There is not any coin in portfolio. Tap the + button to get started!"
 }
 
 //MARK: - System images

@@ -7,15 +7,19 @@
 
 import Foundation
 
-final class SettingsViewModel: ObservableObject {
+protocol SettingsViewModelProtocol: ObservableObject {
+    func getUrl(_ url: AppUrl) -> URL?
+}
+
+enum AppUrl {
+    case youtubeUrl, coinGeckoUrl, gitHubUrl, defaultUrl
+}
+
+final class SettingsViewModel: SettingsViewModelProtocol {
     private let youtubeUrl: String = "https://www.youtube.com/c/swiftfulthinking"
     private let coinGeckoUrl: String = "https://www.coingecko.com"  
     private let gitHubUrl: String = "https://github.com/amilmammadov"
     private let defaultUrl: String = "https://www.google.com"
-    
-    enum AppUrl {
-        case youtubeUrl, coinGeckoUrl, gitHubUrl, defaultUrl
-    }
     
     func getUrl(_ url: AppUrl) -> URL? {
         switch url {

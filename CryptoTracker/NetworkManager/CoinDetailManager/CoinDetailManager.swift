@@ -12,8 +12,8 @@ final class CoinDetailManager: CoinDetailManagerProtocol {
     static let shared = CoinDetailManager()
     private init(){}
     
-    func getCoinDetail() -> AnyPublisher<CoinDetailModel, Error> {
-        guard let request = try? CoinDetailEndPoints.getCoinDetail().request() else {
+    func getCoinDetail(coinId: String) -> AnyPublisher<CoinDetailModel, Error> {
+        guard let request = try? CoinDetailEndPoints.getCoinDetail(coindId: coinId).request() else {
             return Fail(error: NetworkError.invalidUrl).eraseToAnyPublisher()
         }
         return NetworkManager.shared.fetch(model: CoinDetailModel.self, request: request)

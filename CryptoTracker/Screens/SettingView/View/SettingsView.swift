@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+struct SettingsView<SettingsViewModel: SettingsViewModelProtocol>: View {
     
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @ObservedObject var settingsViewModel: SettingsViewModel
     
     var body: some View {
         NavigationStack {
@@ -122,6 +122,6 @@ extension SettingsView {
 
 #Preview {
     NavigationStack {
-        SettingsView()
+        SettingsView(settingsViewModel: SettingsViewModel())
     }
 }

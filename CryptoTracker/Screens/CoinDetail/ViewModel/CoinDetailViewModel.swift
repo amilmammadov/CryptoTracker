@@ -8,14 +8,24 @@
 import Combine
 import SwiftUI
 
-final class CoinDetailViewModel: ObservableObject {
+protocol CoinDetailViewModelProtocol: ObservableObject {
+    var isLoading: Bool { get set }
+    var coin: CoinModel { get set }
+    var coinDetail: CoinDetailModel? { get set }
+    var overviewStatistics: [StatisticsModel] { get set }
+    var additionalStatistics: [StatisticsModel] { get set }
+    var columns: [GridItem] { get set }
+    func setSubscribers()
+}
+
+final class CoinDetailViewModel: CoinDetailViewModelProtocol {
     
     @Published var isLoading: Bool = true
     @Published var coin: CoinModel
     @Published var coinDetail: CoinDetailModel?
     @Published var overviewStatistics: [StatisticsModel] = []
     @Published var additionalStatistics: [StatisticsModel] = []
-    let columns: [GridItem] = [GridItem(.flexible()), GridItem(.flexible())]
+    var columns: [GridItem] = [GridItem(.flexible()), GridItem(.flexible())]
     private var cancelables: Set<AnyCancellable> = []
     
     init(coin: CoinModel){
@@ -28,7 +38,7 @@ final class CoinDetailViewModel: ObservableObject {
     }
     
     private func getCoinDetail(){
-        CoinDetailManager.shared.getCoinDetail()
+        CoinDetailManager.shared.getCoinDetail(coinId: coin.id ?? "")
             .sink { [weak self] result in
                 guard let self else { return }
                 switch result {

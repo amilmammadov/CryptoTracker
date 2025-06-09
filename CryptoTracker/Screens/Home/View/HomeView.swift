@@ -7,21 +7,17 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct HomeView<HomeViewModel: HomeViewModelProtocol>: View {
     
     @State private var showPortfolio: Bool = false
     @State private var showPortfolioView: Bool = false
     @State private var showSettingsView: Bool = false
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @ObservedObject var homeViewModel: HomeViewModel
     
     var body: some View {
         ZStack {
             ColorConstants.backgroundColor
                 .ignoresSafeArea()
-                .sheet(isPresented: $showSettingsView) {
-                    SettingsView()
-                        .background(ColorConstants.backgroundColor)
-                }
             
             if homeViewModel.isLoading {
                 ProgressView()
@@ -31,7 +27,7 @@ struct HomeView: View {
             
             VStack {
                 homeHeader
-                StatisticsListView(showPortfolio: $showPortfolio)
+                StatisticsListView(homeViewModel: homeViewModel,showPortfolio: $showPortfolio)
                 SearchBarView(searchText: $homeViewModel.searchText)
                 columnTitles
                 
@@ -40,8 +36,14 @@ struct HomeView: View {
                         .transition(.move(edge: .leading))
                 }
                 if showPortfolio {
-                    portfolioList
-                        .transition(.move(edge: .trailing))
+                    ZStack {
+                        if homeViewModel.portfolioCoins.isEmpty && homeViewModel.searchText.isEmpty {
+                            emptyPortfolioText
+                        } else {
+                            portfolioList
+                        }
+                    }
+                    .transition(.move(edge: .trailing))
                 }
                 Spacer()
             }
@@ -57,14 +59,6 @@ struct HomeView: View {
                 }
             }
         }
-        .sheet(isPresented: $showPortfolioView) {
-            PortfolioView()
-                .environmentObject(homeViewModel)
-        }
-        .navigationDestination(for: CoinModel.self) { coin in
-            CoinDetailView(coin: coin)
-                .background(ColorConstants.backgroundColor)
-        }
     }
 }
 
@@ -78,9 +72,9 @@ extension HomeView {
                 }
                 .onTapGesture {
                     if showPortfolio {
-                        showPortfolioView.toggle()
+                        homeViewModel.goToPortfolioView()
                     } else {
-                        showSettingsView.toggle()
+                        homeViewModel.goToSettingsView()
                     }
                 }
             Spacer()
@@ -106,9 +100,11 @@ extension HomeView {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(homeViewModel.filteredCoins) { coin in
-                    NavigationLink(value: coin) {
-                        CoinCellView(coin: coin, showHoldingsColumn: false)
-                    }
+                    CoinCellView(coin: coin, showHoldingsColumn: false)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            homeViewModel.goToCoinDetailView(coin)
+                        }
                 }
             }
         }
@@ -118,9 +114,11 @@ extension HomeView {
         ScrollView {
             LazyVStack {
                 ForEach(homeViewModel.portfolioCoins) { coin in
-                    NavigationLink(value: coin) {
-                        CoinCellView(coin: coin, showHoldingsColumn: true)
-                    }
+                    CoinCellView(coin: coin, showHoldingsColumn: true)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            homeViewModel.goToCoinDetailView(coin)
+                        }
                 }
             }
         }
@@ -167,11 +165,19 @@ extension HomeView {
         .foregroundStyle(ColorConstants.secondaryTextColor)
         .padding(.horizontal)
     }
+    
+    private var emptyPortfolioText: some View {
+        Text(StringConstants.emptyPortfolioText)
+            .font(.callout)
+            .fontWeight(.medium)
+            .foregroundStyle(ColorConstants.accentColor)
+            .multilineTextAlignment(.center)
+            .padding(52)
+    }
 }
 
 #Preview {
     NavigationStack {
-        HomeView()
-            .environmentObject(HomeViewModel())
+        HomeView(homeViewModel: HomeViewModel())
     }
 }

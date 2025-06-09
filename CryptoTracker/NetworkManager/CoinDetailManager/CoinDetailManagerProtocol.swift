@@ -8,5 +8,5 @@
 import Combine
 
 protocol CoinDetailManagerProtocol {
-    func getCoinDetail() -> AnyPublisher<CoinDetailModel, Error>
+    func getCoinDetail(coinId: String) -> AnyPublisher<CoinDetailModel, Error>
 }

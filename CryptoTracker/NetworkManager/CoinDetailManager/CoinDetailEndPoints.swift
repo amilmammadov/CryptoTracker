@@ -8,7 +8,7 @@
 import Foundation
 
 enum CoinDetailEndPoints {
-    case getCoinDetail(path: String = "coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false")
+    case getCoinDetail(coindId: String)
     
     func request() throws -> URLRequest {
         guard let url = URL(string: self.path) else {
@@ -23,7 +23,7 @@ enum CoinDetailEndPoints {
     
     private var path: String {
         switch self {
-        case .getCoinDetail(let path): return NetworkHelper.shared.configureUrl(path)
+        case .getCoinDetail(let coinId): return NetworkHelper.shared.configureUrl("coins/\(coinId)?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false")
         }
     }
     

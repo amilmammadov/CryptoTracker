@@ -7,20 +7,14 @@
 
 import SwiftUI
 
-struct CoinDetailView: View {
+struct CoinDetailView<CoinDetailVieModel: CoinDetailViewModelProtocol>: View {
     
-    let coin: CoinModel
     @State private var showMoreDescription: Bool = false
-    @StateObject private var coinDetailViewModel: CoinDetailViewModel
-    
-    init(coin: CoinModel) {
-        self.coin = coin
-        _coinDetailViewModel = StateObject(wrappedValue: CoinDetailViewModel(coin: coin))
-    }
-    
+    @ObservedObject var coinDetailViewModel: CoinDetailVieModel
+
     var body: some View {
         ScrollView {
-            ChartView(coin: coin)
+            ChartView(coin: coinDetailViewModel.coin)
                 .frame(height: 150)
                 .padding(.vertical)
             overviewTitle
@@ -38,7 +32,7 @@ struct CoinDetailView: View {
         .onAppear(perform: {
             coinDetailViewModel.setSubscribers()
         })
-        .navigationTitle(coin.id?.capitalized ?? "")
+        .navigationTitle(coinDetailViewModel.coin.id?.capitalized ?? "")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -52,8 +46,8 @@ extension CoinDetailView {
     private var navigationBarTrailing: some View {
         HStack {
             Spacer()
-            Text(coin.symbol?.uppercased() ?? "")
-            CoinImageView(coin: coin)
+            Text(coinDetailViewModel.coin.symbol?.uppercased() ?? "")
+            CoinImageView(coin: coinDetailViewModel.coin)
                 .frame(width: 24, height: 24)
         }
         .foregroundStyle(ColorConstants.accentColor)
@@ -134,6 +128,6 @@ extension CoinDetailView {
 
 #Preview {
     NavigationStack {
-        CoinDetailView(coin: PreviewData.coin)
+        CoinDetailView(coinDetailViewModel: CoinDetailViewModel(coin: PreviewData.coin))
     }
 }
