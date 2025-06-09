@@ -23,6 +23,7 @@ final class PortfolioViewModel: BaseViewModel, PortfolioViewModelProtocol {
         getSavedCoinsForPortfolio()
     }
     
+    //MARK: - Update portfolio: Save, Delete, Update saved coin in the portfolio
     func updatePortfolio(coin: CoinModel, amount: Double){
         PortfolioDataManager.shared.updatePortfolio(coin: coin, amount: amount)
     }

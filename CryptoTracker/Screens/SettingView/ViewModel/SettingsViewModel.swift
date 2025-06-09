@@ -21,6 +21,7 @@ final class SettingsViewModel: SettingsViewModelProtocol {
     private let gitHubUrl: String = "https://github.com/amilmammadov"
     private let defaultUrl: String = "https://www.google.com"
     
+    //MARK: - Configure URL to navigate
     func getUrl(_ url: AppUrl) -> URL? {
         switch url {
         case .youtubeUrl:

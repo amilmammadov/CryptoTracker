@@ -25,6 +25,7 @@ final class LaunchViewModel: LaunchViewModelProtocol {
     var timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     var onFinish: (()->Void)?
     
+    //MARK: - Handles counter when timer emits value
     func handleCounterChange(){
         if counter == launchText.count - 1 {
             counter = 0

@@ -37,6 +37,7 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
         createReadableCoinDetailForDetailView()
     }
     
+    //MARK: - Fetch coin detail by coin id
     private func getCoinDetail(){
         CoinDetailManager.shared.getCoinDetail(coinId: coin.id ?? "")
             .sink { [weak self] result in
@@ -54,6 +55,7 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
             .store(in: &cancelables)
     }
     
+    //MARK: - Configure coinDetail to show as readable format on coin's detail view
     private func createReadableCoinDetailForDetailView(){
         $coinDetail
             .combineLatest($coin)
@@ -72,6 +74,7 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
         return (overviewArray, additionalArray)
     }
     
+    //MARK: - Create Overview data
     private func createOverviewArray(coin: CoinModel) -> [StatisticsModel] {
         let price: String = coin.currentPrice?.asCurrenyWith6Decimals() ?? ""
         let priceChange: Double = coin.priceChangePercentage24H ?? 0
@@ -96,6 +99,7 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
         return overviewArray
     }
     
+    //MARK: - Create Additional detail for coin
     private func createAdditionalArray(coinDetail: CoinDetailModel?, coin: CoinModel) -> [StatisticsModel] {
         let high: String = coin.high24H?.asCurrenyWith2Decimals() ?? "n/a"
         let highStatistics: StatisticsModel = StatisticsModel(title: "24h High", value: high)

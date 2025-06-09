@@ -44,6 +44,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
         getPortfolioCoins()
     }
     
+    //MARK: - Setup sort subscriber to get sorted coins when sortOption changes
     private func setupSortSubscriberForAllCoins(){
         $sortOption
             .combineLatest($filteredCoins)
@@ -55,6 +56,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
             .store(in: &cancellables)
     }
     
+    //MARK: - Configure market data and portfolio coins for statistics
     private func getMarketDataForStatistics(){
         $marketData
             .combineLatest($portfolioCoins)
@@ -66,6 +68,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
             .store(in: &cancellables)
     }
     
+    //MARK: - Map marketData and portfolioCoins to Statistics array
     private func mapMarketDataAndPortfolioEntities(_ marketData: MarketDataModel?, _ portfolioCoins: [CoinModel]) -> [StatisticsModel] {
         guard let marketData else { return [] }
         var statistics = [StatisticsModel]()
@@ -73,7 +76,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
         let volumeStatistics = StatisticsModel(title: StringConstants.volume24h, value: marketData.volume)
         let bitcoinDominanceStatistics = StatisticsModel(title: StringConstants.btcDominance, value: marketData.bitcoinDominance)
         
-        //MARK: - calculate portfolioValue and percentageChange for Portfolio
+        //MARK: - Calculate portfolioValue and percentageChange for Portfolio
         
         let portfolioValue = portfolioCoins.map{ $0.currentHoldingsValue }.reduce(0, +)
         let previousValue = portfolioCoins.map { coin in
@@ -94,6 +97,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
         return statistics
     }
     
+    //MARK: - Sort home page coins when tapped column's title
     private func sortCoins(_ sortOption: SortOption, _ coins: [CoinModel]) -> [CoinModel] {
         switch sortOption {
         case .rank, .holdings:
@@ -107,6 +111,7 @@ final class HomeViewModel: BaseViewModel, HomeViewModelProtocol {
         }
     }
     
+    //MARK: - Get saved portfolio coins
     func getPortfolioCoins(){
         PortfolioDataManager.shared.getPortfolio()
     }

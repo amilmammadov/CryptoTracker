@@ -19,6 +19,7 @@ class BaseViewModel: ObservableObject {
     @Published var sortOption: SortOption = .rank
     private var cancellables = Set<AnyCancellable>()
     
+    //MARK: - Fetch all coins
     func getAllCoins() {
         HomeManager.shared.getAllCoins()
             .sink { [weak self] completion in
@@ -36,6 +37,7 @@ class BaseViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    //MARK: - Setup search subscriber to get filtered coins when searchText changes
     func setupSearchSubscriber() {
         $searchText
             .combineLatest($allCoins)
@@ -47,6 +49,7 @@ class BaseViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    //MARK: - Filter coins by name, symbol and id
     func filterCoins(_ text: String, _ coins: [CoinModel]) -> [CoinModel]{
         guard !text.isEmpty else { return coins }
         let lowercasedText = text.lowercased()
@@ -58,6 +61,7 @@ class BaseViewModel: ObservableObject {
         }
     }
     
+    //MARK: - Fetch marketData to create statistics data
     func getGlobalMarketData(){
         HomeManager.shared.getGlobalMarketData()
             .sink { result in
@@ -75,6 +79,7 @@ class BaseViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    //MARK: - Get saved portfolio coins
     func getSavedCoinsForPortfolio(){
         $allCoins
             .combineLatest(PortfolioDataManager.shared.$savedEntities)
@@ -86,6 +91,7 @@ class BaseViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    //MARK: - Configure portfolio coins with current holdigs
     private func mapAllCoinsToPortfolioCoins(_ allCoins: [CoinModel], _ portfolioEntities: [PortfolioEntity]) -> [CoinModel]{
         return allCoins.compactMap { coin -> CoinModel? in
             guard let entity = portfolioEntities.first(where: { $0.coinId == coin.id }) else { return nil }
@@ -93,6 +99,7 @@ class BaseViewModel: ObservableObject {
         }
     }
     
+    //MARK: - Sort portfolio coins when tapped column's title
     private func sortPortfolioCoinsIfNeeded(_ coins: [CoinModel]) -> [CoinModel]{
         switch sortOption {
         case .holdings:
