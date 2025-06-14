@@ -17,6 +17,8 @@ class BaseViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var marketData: MarketDataModel?
     @Published var sortOption: SortOption = .rank
+    @Published var alertItem: AlertItem?
+    @Published var isAlertShowing: Bool = false
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Fetch all coins
@@ -28,7 +30,8 @@ class BaseViewModel: ObservableObject {
                 case .finished:
                     self.isLoading = false
                 case .failure(let error):
-                    print("DEBUG: Error \(error)")
+                    self.isAlertShowing = true
+                    self.alertItem = NetworkErrorHandler.shared.handleError(error)
                 }
             } receiveValue: { [weak self] coins in
                 guard let self else { return }
@@ -64,13 +67,15 @@ class BaseViewModel: ObservableObject {
     //MARK: - Fetch marketData to create statistics data
     func getGlobalMarketData(){
         HomeManager.shared.getGlobalMarketData()
-            .sink { result in
+            .sink { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .finished:
                     self.isLoading = false
                     print("DEBUG: Data had fetched")
                 case .failure(let error):
-                    print("DEBUG: Error \(error)")
+                    self.isAlertShowing = true
+                    self.alertItem = NetworkErrorHandler.shared.handleError(error)
                 }
             } receiveValue: { [weak self] globalData in
                 guard let self else { return }
@@ -117,3 +122,4 @@ class BaseViewModel: ObservableObject {
         }
     }
 }
+

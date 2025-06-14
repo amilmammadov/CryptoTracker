@@ -39,6 +39,11 @@ struct CoinDetailView<CoinDetailVieModel: CoinDetailViewModelProtocol>: View {
                 navigationBarTrailing
             }
         }
+        .alert(coinDetailViewModel.alertItem?.title ?? "Alert", isPresented: $coinDetailViewModel.isAlertShowing, actions: {
+            Button(coinDetailViewModel.alertItem?.buttonTitle ?? "Ok", role: .cancel){}
+        }, message: {
+            Text(coinDetailViewModel.alertItem?.message ?? "")
+        })
     }
 }
 

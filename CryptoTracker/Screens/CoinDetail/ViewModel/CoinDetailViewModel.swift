@@ -15,6 +15,8 @@ protocol CoinDetailViewModelProtocol: ObservableObject {
     var overviewStatistics: [StatisticsModel] { get set }
     var additionalStatistics: [StatisticsModel] { get set }
     var columns: [GridItem] { get set }
+    var isAlertShowing: Bool { get set }
+    var alertItem: AlertItem? { get set }
     func setSubscribers()
 }
 
@@ -25,6 +27,8 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
     @Published var coinDetail: CoinDetailModel?
     @Published var overviewStatistics: [StatisticsModel] = []
     @Published var additionalStatistics: [StatisticsModel] = []
+    @Published var isAlertShowing: Bool = false
+    @Published var alertItem: AlertItem?
     var columns: [GridItem] = [GridItem(.flexible()), GridItem(.flexible())]
     private var cancelables: Set<AnyCancellable> = []
     
@@ -46,7 +50,8 @@ final class CoinDetailViewModel: CoinDetailViewModelProtocol {
                 case .finished:
                     self.isLoading = false
                 case .failure(let error):
-                    print("DEBUG: Error fetching coin detail \(error)")
+                    self.isAlertShowing = true
+                    self.alertItem = NetworkErrorHandler.shared.handleError(error)
                 }
             } receiveValue: { [weak self] coinDetail in
                 guard let self else { return }

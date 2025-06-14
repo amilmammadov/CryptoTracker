@@ -58,6 +58,11 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View {
                     homeViewModel.getPortfolioCoins()
                 }
             }
+            .alert(homeViewModel.alertItem?.title ?? "Alert", isPresented: $homeViewModel.isAlertShowing, actions: {
+                Button(homeViewModel.alertItem?.buttonTitle ?? "Ok", role: .cancel){}
+            }, message: {
+                Text(homeViewModel.alertItem?.message ?? "")
+            })
         }
     }
 }

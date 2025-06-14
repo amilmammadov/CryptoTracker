@@ -17,6 +17,8 @@ protocol HomeViewModelProtocol: ObservableObject {
     var statistics: [StatisticsModel] { get set }
     var marketData: MarketDataModel? { get set }
     var sortOption: SortOption { get set }
+    var alertItem: AlertItem? { get set }
+    var isAlertShowing: Bool { get set }
     func setSubscribers()
     func getPortfolioCoins()
     func goToSettingsView()
